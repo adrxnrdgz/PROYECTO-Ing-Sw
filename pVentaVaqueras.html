@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#222">
+<title>Las Vaqueras - POS</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#f4f4f4;
+    min-height:100vh;
+}
+
+.hidden{
+    display:none !important;
+}
+
+/* ================= HEADER ================= */
+.header-bar{
+    background:#222;
+    color:white;
+    padding:15px 25px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.logo{
+    font-size:22px;
+    font-weight:bold;
+}
+
+.logo a{
+    text-decoration:none;
+    color:white;
+}
+
+.logo a:hover{
+    color:#ff9800;
+}
+
+/* ================= LOGIN MODAL ================= */
+.modal{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
+}
+
+.modal-content{
+    background:white;
+    padding:40px;
+    width:350px;
+    border-radius:10px;
+    text-align:center;
+    position:relative;
+}
+
+.modal-content h2{
+    margin-bottom:20px;
+}
+
+.input-group{
+    margin-bottom:15px;
+    text-align:left;
+}
+
+.input-group label{
+    font-size:14px;
+}
+
+.input-group input{
+    width:100%;
+    padding:8px;
+    margin-top:5px;
+    border-radius:5px;
+    border:1px solid #ccc;
+}
+
+.btn-login{
+    width:100%;
+    padding:10px;
+    border:none;
+    border-radius:5px;
+    background:#ff9800;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.btn-login:hover{
+    background:#e68900;
+}
+
+.close{
+    position:absolute;
+    top:10px;
+    right:15px;
+    text-decoration:none;
+    font-size:18px;
+    color:#999;
+}
+
+.close:hover{
+    color:black;
+}
+
+.login-error{
+    min-height:18px;
+    margin-top:10px;
+    font-size:13px;
+    color:#e53935;
+}
+
+/* ================= CONTENIDO PRINCIPAL ================= */
+.main{
+    padding:40px;
+    text-align:center;
+}
+
+.main h1{
+    margin-bottom:10px;
+}
+
+.main p{
+    color:#666;
+}
+
+.open-login{
+    display:inline-block;
+    margin-top:18px;
+    padding:12px 20px;
+    border-radius:6px;
+    background:#222;
+    color:#fff;
+    text-decoration:none;
+}
+
+.open-login:hover{
+    background:#ff9800;
+}
+
+/* ================= POS ================= */
+.pos-layout{
+    display:flex;
+    height:calc(100vh - 62px);
+}
+
+.productos{
+    width:65%;
+    padding:20px;
+    background-color:#ffffff;
+    border-right:2px solid #ddd;
+    overflow-y:auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.header{
+    font-size:24px;
+    font-weight:bold;
+    margin-bottom:20px;
+    color:#333;
+}
+
+.categorias{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+}
+
+.categoria{
+    padding:10px 15px;
+    background-color:#222;
+    color:white;
+    border-radius:20px;
+    cursor:pointer;
+    font-size:14px;
+    border:none;
+}
+
+.categoria.activa,
+.categoria:hover{
+    background:#ff9800;
+}
+
+.grid-productos{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:15px;
+}
+
+.producto{
+    background-color:#fafafa;
+    border:1px solid #ddd;
+    border-radius:10px;
+    padding:15px;
+    text-align:center;
+    transition:0.2s;
+    cursor:pointer;
+}
+
+.producto:hover{
+    background-color:#ffe8cc;
+    border-color:#ff9800;
+}
+
+.producto h3{
+    font-size:16px;
+    margin-bottom:10px;
+}
+
+.precio{
+    color:#e53935;
+    font-weight:bold;
+    font-size:14px;
+}
+
+.orden{
+    width:35%;
+    padding:20px;
+    background-color:#fdfdfd;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.lista-orden{
+    flex-grow:1;
+    margin-bottom:20px;
+    overflow:auto;
+}
+
+.item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 0;
+    border-bottom:1px solid #ddd;
+    font-size:14px;
+    gap:10px;
+}
+
+.item span:first-child{
+    flex:1;
+}
+
+.quitar{
+    border:none;
+    background:transparent;
+    color:#e53935;
+    cursor:pointer;
+    font-size:12px;
+}
+
+.total{
+    font-size:18px;
+    font-weight:bold;
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:20px;
+}
+
+.botones{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.btn{
+    padding:12px;
+    border:none;
+    border-radius:5px;
+    font-size:14px;
+    cursor:pointer;
+}
+
+.btn-pagar{
+    background-color:#4CAF50;
+    color:white;
+}
+
+.btn-cancelar{
+    background-color:#e53935;
+    color:white;
+}
+
+.ticket{
+    margin-top:15px;
+    padding:12px;
+    border:1px dashed #aaa;
+    border-radius:8px;
+    background:#fff;
+    font-size:14px;
+    display:none;
+}
+
+.ticket strong{
+    display:block;
+    margin-bottom:6px;
+}
+
+@media (max-width: 900px){
+    .pos-layout{
+        flex-direction:column;
+        height:auto;
+    }
+
+    .productos,
+    .orden{
+        width:100%;
+    }
+
+    .grid-productos{
+        grid-template-columns:repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px){
+    .grid-productos{
+        grid-template-columns:1fr;
+    }
+}
+
+/* ================= MOBILE UX PRO ================= */
+@media (max-width: 600px){
+
+    body{
+        font-size:14px;
+    }
+
+    .header-bar{
+        flex-direction:column;
+        gap:5px;
+        text-align:center;
+    }
+
+    .main{
+        padding:20px;
+    }
+
+    /* POS tipo app vertical */
+    .pos-layout{
+        flex-direction:column;
+        height:auto;
+    }
+
+    .productos{
+        order:1;
+        padding:15px;
+    }
+
+    .orden{
+        order:2;
+        padding:15px;
+        position:sticky;
+        bottom:0;
+        background:#fff;
+        border-top:2px solid #ddd;
+    }
+
+    /* Grid más usable en móvil */
+    .grid-productos{
+        grid-template-columns:1fr;
+        gap:12px;
+    }
+
+    .producto{
+        padding:18px;
+        font-size:16px;
+    }
+
+    /* Botones más grandes (touch-friendly) */
+    .btn,
+    .btn-login{
+        padding:14px;
+        font-size:16px;
+    }
+
+    .categoria{
+        font-size:13px;
+        padding:8px 12px;
+    }
+
+    /* Orden más clara */
+    .item{
+        font-size:15px;
+    }
+
+    .total{
+        font-size:20px;
+    }
+
+    /* Modal adaptable */
+    .modal-content{
+        width:90%;
+        padding:25px;
+    }
+
+    .input-group input{
+        padding:12px;
+        font-size:16px;
+    }
+}
+
+html, body{
+    overscroll-behavior: none;
+}
+
+button{
+    touch-action: manipulation;
+}
+
+</style>
+</head>
+<body>
+
+<!-- ================= PANTALLA INICIAL ================= -->
+<section id="landing">
+    <div class="header-bar">
+        <div class="logo">
+            <a href="#login">🍔 Las Vaqueras</a>
+        </div>
+        <div>Sistema POS</div>
+    </div>
+
+    <div class="main">
+        <h1>Punto de Venta</h1>
+        <p>Haz clic en el logo 🍔 para iniciar sesión.</p>
+    </div>
+</section>
+
+<!-- ================= MODAL LOGIN ================= -->
+<div id="login" class="modal">
+    <div class="modal-content">
+        <a href="#" class="close" id="cerrarModal">✖</a>
+        <h2 id="loginLogo" style="cursor:pointer;">🍔 Iniciar Sesión</h2>
+
+        <div class="input-group">
+            <label>Usuario</label>
+            <input id="usuario" type="text" placeholder="Ingresa tu usuario" autocomplete="username">
+        </div>
+
+        <div class="input-group">
+            <label>Contraseña</label>
+            <input id="password" type="password" placeholder="Ingresa tu contraseña" autocomplete="current-password">
+        </div>
+
+        <button class="btn-login" id="btnEntrar">Entrar</button>
+        <div id="loginError" class="login-error"></div>
+    </div>
+</div>
+
+<!-- ================= POS ================= -->
+<section id="pos" class="hidden">
+    <div class="header-bar">
+        <div class="logo">🍔 Las Vaqueras</div>
+        <div>Sistema POS</div>
+    </div>
+
+    <div class="pos-layout">
+        <div class="productos">
+            <div class="header">🍔 Las Vaqueras</div>
+
+            <div class="categorias" id="categorias"></div>
+
+            <div class="grid-productos" id="gridProductos"></div>
+        </div>
+
+        <div class="orden">
+            <div>
+                <div class="header">🧾 Orden Actual</div>
+
+                <div class="lista-orden" id="listaOrden"></div>
+
+                <div class="total">
+                    <span>Total:</span>
+                    <span id="total">$0</span>
+                </div>
+
+                <div id="ticket" class="ticket"></div>
+            </div>
+
+            <div class="botones">
+                <button class="btn btn-pagar" id="btnPagar">Cobrar</button>
+                <button class="btn btn-cancelar" id="btnCancelar">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ================= 2.1.1 HERRAMIENTAS CASE =================
+1. StarUML – Modelado UML
+2. Visual Paradigm – Diagramas completos
+3. Enterprise Architect – Arquitectura de software
+4. Lucidchart – Diagramas en línea
+5. Draw.io – Diagramación gratuita
+6. Rational Rose – UML clásico
+-->
+
+<!-- ================= 2.1 DISEÑO DE PROCESOS (ALGORITMO) =================
+1. Mostrar pantalla inicial
+2. Usuario hace clic en logo
+3. Se abre ventana de login
+4. Usuario ingresa credenciales
+5. Validar campos
+6. Acceder al sistema POS
+7. <!-- ================= 2.1 DISEÑO DE PROCESOS (ALGORITMO) =================
+1. Mostrar pantalla inicial
+2. Usuario visualiza sistema
+3. Usuario hace clic en logo
+4. Se abre ventana de login
+5. Usuario ingresa usuario
+6. Usuario ingresa contraseña
+7. Validar campos vacíos
+8. Mostrar error si aplica
+9. Validar acceso
+10. Cerrar modal
+11. Mostrar interfaz POS
+12. Cargar productos
+13. Mostrar categorías
+14. Filtrar productos por categoría
+15. Usuario selecciona producto
+16. Agregar producto a orden
+17. Mostrar lista de orden
+18. Calcular subtotal
+19. Permitir eliminar producto
+20. Actualizar total
+21. Usuario decide continuar agregando
+22. Usuario presiona cobrar
+23. Validar orden no vacía
+24. Calcular total final
+25. Generar ticket
+26. Limpiar orden para nueva venta
+-->
+
+<!-- ================= 2.2 DISEÑO ARQUITECTÓNICO =================
+LÓGICA:
+- JavaScript maneja eventos (clicks, login, productos)
+
+PROCESO:
+- Flujo: Login → Selección → Orden → Pago
+
+DESARROLLO:
+- HTML (estructura)
+- CSS (estilos)
+- JavaScript (funcionalidad)
+
+FÍSICO:
+- Sistema ejecutado en navegador web
+- Compatible con PC o tablet (POS)
+-->
+
+<!-- ================= 2.3 DICCIONARIO DE DATOS =================
+Producto:
+- id: entero
+- nombre: texto
+- precio: número
+- categoria: texto
+
+Orden:
+- listaProductos: arreglo de IDs
+- total: número calculado dinámicamente
+-->
+
+<!-- ================= 2.4 DISEÑO DE INTERFAZ =================
+COLORES:
+- Negro (#222): barra superior
+- Naranja (#ff9800): interacción
+- Rojo (#e53935): precios/cancelar
+- Verde (#4CAF50): cobrar
+- Gris (#f4f4f4): fondo
+
+PROTOTIPOS:
+1. Pantalla inicial (login)
+2. Modal de autenticación
+3. Vista de productos
+4. Vista de orden
+5. Pantalla de pago (ticket)
+-->
+<script>
+const productos = [
+    { id: 1, nombre: 'Clásica', precio: 85, categoria: 'Hamburguesas' },
+    { id: 2, nombre: 'Doble Queso', precio: 110, categoria: 'Hamburguesas' },
+    { id: 3, nombre: 'Bacon BBQ', precio: 120, categoria: 'Hamburguesas' },
+    { id: 4, nombre: 'Combo Clásico', precio: 150, categoria: 'Combos' },
+    { id: 5, nombre: 'Combo Doble', precio: 180, categoria: 'Combos' },
+    { id: 6, nombre: 'Papas Grandes', precio: 55, categoria: 'Extras' },
+    { id: 7, nombre: 'Aros de Cebolla', precio: 60, categoria: 'Extras' },
+    { id: 8, nombre: 'Refresco', precio: 35, categoria: 'Bebidas' },
+    { id: 9, nombre: 'Agua', precio: 25, categoria: 'Bebidas' }
+];
+
+const categorias = ['Todos', 'Hamburguesas', 'Combos', 'Bebidas', 'Extras'];
+let categoriaActiva = 'Todos';
+let orden = [];
+
+const categoriasEl = document.getElementById('categorias');
+const gridProductosEl = document.getElementById('gridProductos');
+const listaOrdenEl = document.getElementById('listaOrden');
+const totalEl = document.getElementById('total');
+const ticketEl = document.getElementById('ticket');
+const posEl = document.getElementById('pos');
+const landingEl = document.getElementById('landing');
+const modalEl = document.getElementById('login');
+
+function formatearPrecio(valor){
+    return '$' + valor.toFixed(0);
+}
+
+function renderCategorias(){
+    categoriasEl.innerHTML = '';
+    categorias.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'categoria' + (cat === categoriaActiva ? ' activa' : '');
+        btn.textContent = cat;
+        btn.addEventListener('click', () => {
+            categoriaActiva = cat;
+            renderCategorias();
+            renderProductos();
+        });
+        categoriasEl.appendChild(btn);
+    });
+}
+
+function renderProductos(){
+    const filtrados = categoriaActiva === 'Todos'
+        ? productos
+        : productos.filter(p => p.categoria === categoriaActiva);
+
+    gridProductosEl.innerHTML = '';
+
+    filtrados.forEach(producto => {
+        const card = document.createElement('div');
+        card.className = 'producto';
+        card.innerHTML = `
+            <h3>${producto.nombre}</h3>
+            <div class="precio">${formatearPrecio(producto.precio)}</div>
+            <div style="margin-top:10px;font-size:12px;color:#666;">${producto.categoria}</div>
+        `;
+        card.addEventListener('click', () => agregarProducto(producto.id));
+        gridProductosEl.appendChild(card);
+    });
+}
+
+function agregarProducto(id){
+    orden.push(id);
+    renderOrden();
+}
+
+function quitarProducto(index){
+    orden.splice(index, 1);
+    renderOrden();
+}
+
+function renderOrden(){
+    listaOrdenEl.innerHTML = '';
+    let total = 0;
+
+    if (orden.length === 0){
+        listaOrdenEl.innerHTML = '<div style="padding:10px 0;color:#777;">No hay productos agregados.</div>';
+    }
+
+    orden.forEach((id, index) => {
+        const prod = productos.find(p => p.id === id);
+        total += prod.precio;
+
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.innerHTML = `
+            <span>${prod.nombre}</span>
+            <span>${formatearPrecio(prod.precio)}</span>
+            <button class="quitar" aria-label="Quitar producto">Quitar</button>
+        `;
+        item.querySelector('.quitar').addEventListener('click', () => quitarProducto(index));
+        listaOrdenEl.appendChild(item);
+    });
+
+    totalEl.textContent = formatearPrecio(total);
+    ticketEl.style.display = 'none';
+    ticketEl.innerHTML = '';
+}
+
+function limpiarOrden(){
+    orden = [];
+    renderOrden();
+}
+
+function cobrar(){
+    if (orden.length === 0){
+        alert('No hay productos en la orden.');
+        return;
+    }
+
+    const total = orden.reduce((acum, id) => {
+        const prod = productos.find(p => p.id === id);
+        return acum + prod.precio;
+    }, 0);
+
+    const resumen = orden.map(id => productos.find(p => p.id === id).nombre).join(', ');
+    ticketEl.innerHTML = `<strong>Ticket generado</strong>Productos: ${resumen}<br>Total pagado: ${formatearPrecio(total)}`;
+    ticketEl.style.display = 'block';
+    alert('Pago realizado correctamente.');
+    limpiarOrden();
+}
+
+document.getElementById('btnEntrar').addEventListener('click', () => {
+    const usuario = document.getElementById('usuario').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const error = document.getElementById('loginError');
+
+    if (usuario === '' || password === ''){
+        error.textContent = 'Ingresa usuario y contraseña.';
+        return;
+    }
+
+    error.textContent = '';
+    modalEl.style.display = 'none';
+    landingEl.classList.add('hidden');
+    posEl.classList.remove('hidden');
+    window.location.hash = '';
+});
+
+document.getElementById('btnCancelar').addEventListener('click', () => {
+    if (confirm('¿Deseas cancelar la orden?')){
+        limpiarOrden();
+    }
+});
+
+document.getElementById('btnPagar').addEventListener('click', cobrar);
+
+window.addEventListener('hashchange', () => {
+    if (window.location.hash === '#login') {
+        modalEl.style.display = 'flex';
+    }
+});
+
+window.addEventListener('load', () => {
+    renderCategorias();
+    renderProductos();
+    renderOrden();
+
+    if (window.location.hash === '#login') {
+        modalEl.style.display = 'flex';
+    }
+});
+</script>
+
+</body>
+</html>
