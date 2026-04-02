@@ -513,13 +513,6 @@ button{
 
 <!-- ================= 2.1 DISEÑO DE PROCESOS (ALGORITMO) =================
 1. Mostrar pantalla inicial
-2. Usuario hace clic en logo
-3. Se abre ventana de login
-4. Usuario ingresa credenciales
-5. Validar campos
-6. Acceder al sistema POS
-7. <!-- ================= 2.1 DISEÑO DE PROCESOS (ALGORITMO) =================
-1. Mostrar pantalla inicial
 2. Usuario visualiza sistema
 3. Usuario hace clic en logo
 4. Se abre ventana de login
@@ -591,6 +584,7 @@ PROTOTIPOS:
 4. Vista de orden
 5. Pantalla de pago (ticket)
 -->
+
 <script>
 const productos = [
     { id: 1, nombre: 'Clásica', precio: 85, categoria: 'Hamburguesas' },
@@ -745,7 +739,15 @@ document.getElementById('btnPagar').addEventListener('click', cobrar);
 window.addEventListener('hashchange', () => {
     if (window.location.hash === '#login') {
         modalEl.style.display = 'flex';
+    } else {
+        modalEl.style.display = 'none';
     }
+});
+
+document.getElementById('cerrarModal').addEventListener('click', (e) => {
+    e.preventDefault(); // evita que cambie el hash
+    modalEl.style.display = 'none';
+    window.location.hash = ''; // limpia #login
 });
 
 window.addEventListener('load', () => {
